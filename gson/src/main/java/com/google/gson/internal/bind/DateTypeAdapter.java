@@ -51,18 +51,11 @@ public final class DateTypeAdapter extends TypeAdapter<Date> {
   private final DateFormat localFormat
       = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT);
   private final DateFormat iso8601Format = buildIso8601Format();
-  private final DateFormat iso8601FormatMilli = buildIso8601FormatMilli();
 
   private static DateFormat buildIso8601Format() {
     DateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
     iso8601Format.setTimeZone(TimeZone.getTimeZone("UTC"));
     return iso8601Format;
-  }
-
-  private static DateFormat buildIso8601FormatMilli() {
-    DateFormat iso8601FormatMilli = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
-    iso8601FormatMilli.setTimeZone(TimeZone.getTimeZone("UTC"));
-    return iso8601FormatMilli;
   }
 
   @Override public Date read(JsonReader in) throws IOException {
@@ -83,11 +76,11 @@ public final class DateTypeAdapter extends TypeAdapter<Date> {
     } catch (ParseException ignored) {
     }
     try {
-      return iso8601FormatMilli.parse(json);
+      return iso8601Format.parse(json);
     } catch (ParseException ignored) {
     }
     try {
-      return iso8601Format.parse(json);
+      return iso8601Format.parse(json.replaceFirst("\\.\\d\\d\\d", ""));
     } catch (ParseException e) {
       throw new JsonSyntaxException(json, e);
     }
